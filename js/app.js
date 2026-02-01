@@ -139,9 +139,10 @@ function saveMenu() {
 }
 
 // ==========================================
-// KANBAN BOARD
+// KANBAN BOARD - DUAL BOARDS (Business + Personal)
 // ==========================================
-const defaultTasks = {
+
+const defaultBusinessTasks = {
     todo: [
         { id: 1, title: 'Register with county environmental health', desc: 'CA cottage food requirement' },
         { id: 2, title: 'Complete CA cottage food registration', desc: 'File with CalCode' },
@@ -158,40 +159,54 @@ const defaultTasks = {
     done: []
 };
 
-function getTasks() {
-    const saved = localStorage.getItem('claras-tasks');
-    return saved ? JSON.parse(saved) : defaultTasks;
+const defaultPersonalTasks = {
+    todo: [
+        { id: 101, title: 'Example personal task', desc: 'Add your own tasks here' }
+    ],
+    doing: [],
+    done: []
+};
+
+function getTasks(board) {
+    const key = `claras-tasks-${board}`;
+    const saved = localStorage.getItem(key);
+    if (saved) return JSON.parse(saved);
+    return board === 'business' ? defaultBusinessTasks : defaultPersonalTasks;
 }
 
-function saveTasks(tasks) {
-    localStorage.setItem('claras-tasks', JSON.stringify(tasks));
+function saveTasks(board, tasks) {
+    const key = `claras-tasks-${board}`;
+    localStorage.setItem(key, JSON.stringify(tasks));
 }
 
 function loadKanban() {
-    const tasks = getTasks();
-    
-    ['todo', 'doing', 'done'].forEach(status => {
-        const container = document.querySelector(`[data-status="${status}"]`);
-        if (!container) return;
+    ['business', 'personal'].forEach(board => {
+        const tasks = getTasks(board);
         
-        container.innerHTML = '';
-        tasks[status].forEach(task => {
-            const card = createCardElement(task);
-            container.appendChild(card);
+        ['todo', 'doing', 'done'].forEach(status => {
+            const container = document.querySelector(`[data-board="${board}"][data-status="${status}"]`);
+            if (!container) return;
+            
+            container.innerHTML = '';
+            tasks[status].forEach(task => {
+                const card = createCardElement(task, board);
+                container.appendChild(card);
+            });
         });
     });
     
     initDragAndDrop();
 }
 
-function createCardElement(task) {
+function createCardElement(task, board) {
     const card = document.createElement('div');
     card.className = 'kanban-card';
     card.draggable = true;
     card.dataset.id = task.id;
+    card.dataset.board = board;
     
     card.innerHTML = `
-        <button class="delete-card" onclick="deleteCard(${task.id})">×</button>
+        <button class="delete-card" onclick="deleteCard('${board}', ${task.id})">×</button>
         <div class="card-title">${task.title}</div>
         ${task.desc ? `<div class="card-desc">${task.desc}</div>` : ''}
     `;
@@ -199,37 +214,47 @@ function createCardElement(task) {
     return card;
 }
 
-function addCard(status) {
-    const input = document.getElementById(`${status}-input`);
+function addCard(board, status) {
+    const input = document.getElementById(`${board}-${status}-input`);
     const title = input.value.trim();
     if (!title) return;
     
-    const tasks = getTasks();
+    const tasks = getTasks(board);
     const newId = Date.now();
     tasks[status].push({ id: newId, title: title, desc: '' });
-    saveTasks(tasks);
+    saveTasks(board, tasks);
     
-    const container = document.querySelector(`[data-status="${status}"]`);
-    const card = createCardElement({ id: newId, title: title });
+    const container = document.querySelector(`[data-board="${board}"][data-status="${status}"]`);
+    const card = createCardElement({ id: newId, title: title }, board);
     container.appendChild(card);
     
     input.value = '';
     initDragAndDrop();
 }
 
-function handleCardEnter(event, status) {
+function handleCardEnter(event, board, status) {
     if (event.key === 'Enter') {
-        addCard(status);
+        addCard(board, status);
     }
 }
 
-function deleteCard(id) {
-    const tasks = getTasks();
+function deleteCard(board, id) {
+    const tasks = getTasks(board);
     ['todo', 'doing', 'done'].forEach(status => {
         tasks[status] = tasks[status].filter(t => t.id !== id);
     });
-    saveTasks(tasks);
+    saveTasks(board, tasks);
     loadKanban();
+}
+
+function switchBoard(board) {
+    // Update tabs
+    document.querySelectorAll('.board-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelector(`.board-tab.${board}`).classList.add('active');
+    
+    // Update boards
+    document.querySelectorAll('.kanban-wrapper').forEach(wrapper => wrapper.classList.remove('active'));
+    document.getElementById(`${board}-board`).classList.add('active');
 }
 
 function initDragAndDrop() {
@@ -251,6 +276,11 @@ function initDragAndDrop() {
         column.addEventListener('dragover', e => {
             e.preventDefault();
             const dragging = document.querySelector('.dragging');
+            if (!dragging) return;
+            
+            // Only allow dropping in same board
+            if (dragging.dataset.board !== column.dataset.board) return;
+            
             const afterElement = getDragAfterElement(column, e.clientY);
             
             if (afterElement) {
@@ -278,20 +308,22 @@ function getDragAfterElement(column, y) {
 }
 
 function updateTasksFromDOM() {
-    const tasks = { todo: [], doing: [], done: [] };
-    
-    ['todo', 'doing', 'done'].forEach(status => {
-        const cards = document.querySelectorAll(`[data-status="${status}"] .kanban-card`);
-        cards.forEach(card => {
-            const id = parseInt(card.dataset.id);
-            const title = card.querySelector('.card-title').textContent;
-            const descEl = card.querySelector('.card-desc');
-            const desc = descEl ? descEl.textContent : '';
-            tasks[status].push({ id, title, desc });
+    ['business', 'personal'].forEach(board => {
+        const tasks = { todo: [], doing: [], done: [] };
+        
+        ['todo', 'doing', 'done'].forEach(status => {
+            const cards = document.querySelectorAll(`[data-board="${board}"][data-status="${status}"] .kanban-card`);
+            cards.forEach(card => {
+                const id = parseInt(card.dataset.id);
+                const title = card.querySelector('.card-title').textContent;
+                const descEl = card.querySelector('.card-desc');
+                const desc = descEl ? descEl.textContent : '';
+                tasks[status].push({ id, title, desc });
+            });
         });
+        
+        saveTasks(board, tasks);
     });
-    
-    saveTasks(tasks);
 }
 
 // ==========================================

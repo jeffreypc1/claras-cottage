@@ -7,6 +7,47 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .board-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .board-tab {
+            font-family: var(--font-script);
+            font-size: 1.2rem;
+            padding: 0.6rem 1.5rem;
+            background: var(--warm-white);
+            border: 2px solid var(--parchment);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .board-tab:hover {
+            background: var(--parchment);
+        }
+        .board-tab.active {
+            background: var(--brown-medium);
+            color: var(--cream);
+            border-color: var(--brown-dark);
+        }
+        .board-tab.personal.active {
+            background: var(--sage);
+            border-color: var(--sage-dark);
+        }
+        .board-tab.business.active {
+            background: var(--gold);
+            border-color: var(--brown-medium);
+            color: var(--brown-dark);
+        }
+        .kanban-wrapper {
+            display: none;
+        }
+        .kanban-wrapper.active {
+            display: block;
+        }
+    </style>
 </head>
 <body>
     <header class="site-header" style="background: rgba(101, 67, 33, 0.95);">
@@ -86,31 +127,72 @@
 
         <!-- Kanban Tasks Section -->
         <div id="tasks-section" class="admin-section">
-            <div class="kanban-board">
-                <div class="kanban-column todo" id="todo-column">
-                    <h3>📝 To Do</h3>
-                    <div class="kanban-cards" data-status="todo"></div>
-                    <div class="add-card-form">
-                        <input type="text" placeholder="New task..." id="todo-input" onkeypress="handleCardEnter(event, 'todo')">
-                        <button class="add-card-btn" onclick="addCard('todo')">+ Add Task</button>
+            <!-- Personal / Business Tabs -->
+            <div class="board-tabs">
+                <button class="board-tab business active" onclick="switchBoard('business')">🏪 Business</button>
+                <button class="board-tab personal" onclick="switchBoard('personal')">👤 Personal</button>
+            </div>
+
+            <!-- Business Kanban -->
+            <div id="business-board" class="kanban-wrapper active">
+                <div class="kanban-board">
+                    <div class="kanban-column todo">
+                        <h3>📝 To Do</h3>
+                        <div class="kanban-cards" data-board="business" data-status="todo"></div>
+                        <div class="add-card-form">
+                            <input type="text" placeholder="New task..." id="business-todo-input" onkeypress="handleCardEnter(event, 'business', 'todo')">
+                            <button class="add-card-btn" onclick="addCard('business', 'todo')">+ Add Task</button>
+                        </div>
+                    </div>
+
+                    <div class="kanban-column doing">
+                        <h3>🔨 In Progress</h3>
+                        <div class="kanban-cards" data-board="business" data-status="doing"></div>
+                        <div class="add-card-form">
+                            <input type="text" placeholder="New task..." id="business-doing-input" onkeypress="handleCardEnter(event, 'business', 'doing')">
+                            <button class="add-card-btn" onclick="addCard('business', 'doing')">+ Add Task</button>
+                        </div>
+                    </div>
+
+                    <div class="kanban-column done">
+                        <h3>✅ Done</h3>
+                        <div class="kanban-cards" data-board="business" data-status="done"></div>
+                        <div class="add-card-form">
+                            <input type="text" placeholder="New task..." id="business-done-input" onkeypress="handleCardEnter(event, 'business', 'done')">
+                            <button class="add-card-btn" onclick="addCard('business', 'done')">+ Add Task</button>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="kanban-column doing" id="doing-column">
-                    <h3>🔨 In Progress</h3>
-                    <div class="kanban-cards" data-status="doing"></div>
-                    <div class="add-card-form">
-                        <input type="text" placeholder="New task..." id="doing-input" onkeypress="handleCardEnter(event, 'doing')">
-                        <button class="add-card-btn" onclick="addCard('doing')">+ Add Task</button>
+            <!-- Personal Kanban -->
+            <div id="personal-board" class="kanban-wrapper">
+                <div class="kanban-board">
+                    <div class="kanban-column todo">
+                        <h3>📝 To Do</h3>
+                        <div class="kanban-cards" data-board="personal" data-status="todo"></div>
+                        <div class="add-card-form">
+                            <input type="text" placeholder="New task..." id="personal-todo-input" onkeypress="handleCardEnter(event, 'personal', 'todo')">
+                            <button class="add-card-btn" onclick="addCard('personal', 'todo')">+ Add Task</button>
+                        </div>
                     </div>
-                </div>
 
-                <div class="kanban-column done" id="done-column">
-                    <h3>✅ Done</h3>
-                    <div class="kanban-cards" data-status="done"></div>
-                    <div class="add-card-form">
-                        <input type="text" placeholder="New task..." id="done-input" onkeypress="handleCardEnter(event, 'done')">
-                        <button class="add-card-btn" onclick="addCard('done')">+ Add Task</button>
+                    <div class="kanban-column doing">
+                        <h3>🔨 In Progress</h3>
+                        <div class="kanban-cards" data-board="personal" data-status="doing"></div>
+                        <div class="add-card-form">
+                            <input type="text" placeholder="New task..." id="personal-doing-input" onkeypress="handleCardEnter(event, 'personal', 'doing')">
+                            <button class="add-card-btn" onclick="addCard('personal', 'doing')">+ Add Task</button>
+                        </div>
+                    </div>
+
+                    <div class="kanban-column done">
+                        <h3>✅ Done</h3>
+                        <div class="kanban-cards" data-board="personal" data-status="done"></div>
+                        <div class="add-card-form">
+                            <input type="text" placeholder="New task..." id="personal-done-input" onkeypress="handleCardEnter(event, 'personal', 'done')">
+                            <button class="add-card-btn" onclick="addCard('personal', 'done')">+ Add Task</button>
+                        </div>
                     </div>
                 </div>
             </div>
