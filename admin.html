@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kitchen Admin | Clara's Cottage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="site-header" style="background: rgba(101, 67, 33, 0.95);">
+        <nav>
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="menu.html" class="nav-link">Menu</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+            <a href="admin.html" class="nav-link active">🔧 Kitchen</a>
+        </nav>
+    </header>
+
+    <main class="admin-page">
+        <div class="admin-header">
+            <h1>🏠 Clara's Kitchen</h1>
+            <p style="color: var(--brown-medium); font-style: italic;">The secret back room where the magic happens</p>
+        </div>
+
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="showSection('menu-section')">📋 Menu Editor</button>
+            <button class="admin-tab" onclick="showSection('tasks-section')">📌 To-Do Board</button>
+        </div>
+
+        <!-- Menu Editor Section -->
+        <div id="menu-section" class="admin-section active">
+            <div class="menu-editor">
+                <h2>🍪 Cookies & Brownies</h2>
+                <table class="menu-table" id="cookies-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Item Name</th>
+                            <th style="width: 25%;">Price</th>
+                            <th style="width: 25%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button class="btn-add" onclick="addMenuItem('cookies')">+ Add Cookie/Brownie</button>
+            </div>
+
+            <div class="menu-editor">
+                <h2>🎂 Cakes & Treats</h2>
+                <table class="menu-table" id="cakes-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Item Name</th>
+                            <th style="width: 25%;">Price</th>
+                            <th style="width: 25%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button class="btn-add" onclick="addMenuItem('cakes')">+ Add Cake/Treat</button>
+            </div>
+
+            <div class="menu-editor">
+                <h2>🥖 Artisan Breads</h2>
+                <table class="menu-table" id="breads-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Item Name</th>
+                            <th style="width: 25%;">Price</th>
+                            <th style="width: 25%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button class="btn-add" onclick="addMenuItem('breads')">+ Add Bread</button>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn-save" onclick="saveMenu()">💾 Save Menu</button>
+                <p style="margin-top: 1rem; color: var(--brown-medium); font-style: italic;">
+                    Changes will appear on the chalkboard menu
+                </p>
+            </div>
+        </div>
+
+        <!-- Kanban Tasks Section -->
+        <div id="tasks-section" class="admin-section">
+            <div class="kanban-board">
+                <div class="kanban-column todo" id="todo-column">
+                    <h3>📝 To Do</h3>
+                    <div class="kanban-cards" data-status="todo"></div>
+                    <div class="add-card-form">
+                        <input type="text" placeholder="New task..." id="todo-input" onkeypress="handleCardEnter(event, 'todo')">
+                        <button class="add-card-btn" onclick="addCard('todo')">+ Add Task</button>
+                    </div>
+                </div>
+
+                <div class="kanban-column doing" id="doing-column">
+                    <h3>🔨 In Progress</h3>
+                    <div class="kanban-cards" data-status="doing"></div>
+                    <div class="add-card-form">
+                        <input type="text" placeholder="New task..." id="doing-input" onkeypress="handleCardEnter(event, 'doing')">
+                        <button class="add-card-btn" onclick="addCard('doing')">+ Add Task</button>
+                    </div>
+                </div>
+
+                <div class="kanban-column done" id="done-column">
+                    <h3>✅ Done</h3>
+                    <div class="kanban-cards" data-status="done"></div>
+                    <div class="add-card-form">
+                        <input type="text" placeholder="New task..." id="done-input" onkeypress="handleCardEnter(event, 'done')">
+                        <button class="add-card-btn" onclick="addCard('done')">+ Add Task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p class="copyright">© 2026 Clara's Cottage | Kitchen Admin</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+    <script>
+        // Initialize admin page
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMenuEditor();
+            loadKanban();
+        });
+    </script>
+</body>
+</html>

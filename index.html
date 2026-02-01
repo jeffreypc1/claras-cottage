@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clara's Cottage | Artisan Baked Goods</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="fireflies" id="fireflies"></div>
+    
+    <header class="site-header">
+        <nav>
+            <a href="index.html" class="nav-link active">Home</a>
+            <a href="menu.html" class="nav-link">Menu</a>
+            <a href="contact.html" class="nav-link">Contact</a>
+        </nav>
+    </header>
+
+    <main class="home-page">
+        <!-- Animated Cottage Scene -->
+        <div class="cottage-scene">
+            <div class="sky">
+                <div class="moon"></div>
+                <div class="stars"></div>
+            </div>
+            
+            <div class="cottage-container">
+                <!-- Smoke Animation -->
+                <div class="chimney-smoke">
+                    <div class="smoke smoke-1"></div>
+                    <div class="smoke smoke-2"></div>
+                    <div class="smoke smoke-3"></div>
+                </div>
+                
+                <!-- Cottage SVG -->
+                <svg class="cottage-illustration" viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Chimney -->
+                    <rect x="280" y="60" width="40" height="60" fill="#8B4513"/>
+                    <rect x="275" y="50" width="50" height="15" fill="#654321"/>
+                    
+                    <!-- Roof -->
+                    <polygon points="50,150 200,50 350,150" fill="#654321"/>
+                    <polygon points="60,150 200,60 340,150" fill="#8B4513"/>
+                    <!-- Thatch texture lines -->
+                    <line x1="80" y1="140" x2="120" y2="100" stroke="#654321" stroke-width="2"/>
+                    <line x1="120" y1="145" x2="160" y2="90" stroke="#654321" stroke-width="2"/>
+                    <line x1="200" y1="145" x2="200" y2="70" stroke="#654321" stroke-width="2"/>
+                    <line x1="280" y1="145" x2="240" y2="90" stroke="#654321" stroke-width="2"/>
+                    <line x1="320" y1="140" x2="280" y2="100" stroke="#654321" stroke-width="2"/>
+                    
+                    <!-- House Body -->
+                    <rect x="70" y="150" width="260" height="150" fill="#F5E6D3"/>
+                    <rect x="75" y="155" width="250" height="140" fill="#FFF8F0"/>
+                    
+                    <!-- Door -->
+                    <rect x="170" y="200" width="60" height="100" rx="30" ry="30" fill="#654321"/>
+                    <rect x="175" y="205" width="50" height="92" rx="25" ry="25" fill="#8B4513"/>
+                    <circle cx="215" cy="260" r="5" fill="#FFD700"/>
+                    
+                    <!-- Windows with warm glow -->
+                    <rect x="95" y="180" width="50" height="50" rx="5" fill="#654321"/>
+                    <rect x="100" y="185" width="40" height="40" rx="3" fill="#FFE4B5" class="window-glow"/>
+                    <line x1="120" y1="185" x2="120" y2="225" stroke="#654321" stroke-width="3"/>
+                    <line x1="100" y1="205" x2="140" y2="205" stroke="#654321" stroke-width="3"/>
+                    
+                    <rect x="255" y="180" width="50" height="50" rx="5" fill="#654321"/>
+                    <rect x="260" y="185" width="40" height="40" rx="3" fill="#FFE4B5" class="window-glow"/>
+                    <line x1="280" y1="185" x2="280" y2="225" stroke="#654321" stroke-width="3"/>
+                    <line x1="260" y1="205" x2="300" y2="205" stroke="#654321" stroke-width="3"/>
+                    
+                    <!-- Flower boxes -->
+                    <rect x="93" y="230" width="54" height="12" fill="#654321"/>
+                    <circle cx="105" cy="228" r="6" fill="#FF69B4"/>
+                    <circle cx="120" cy="226" r="7" fill="#FFB6C1"/>
+                    <circle cx="135" cy="228" r="6" fill="#FF69B4"/>
+                    
+                    <rect x="253" y="230" width="54" height="12" fill="#654321"/>
+                    <circle cx="265" cy="228" r="6" fill="#DDA0DD"/>
+                    <circle cx="280" cy="226" r="7" fill="#E6E6FA"/>
+                    <circle cx="295" cy="228" r="6" fill="#DDA0DD"/>
+                    
+                    <!-- Ground/Garden -->
+                    <ellipse cx="200" cy="310" rx="180" ry="30" fill="#228B22"/>
+                    <ellipse cx="200" cy="315" rx="160" ry="20" fill="#32CD32"/>
+                    
+                    <!-- Little flowers in garden -->
+                    <circle cx="80" cy="305" r="4" fill="#FFD700"/>
+                    <circle cx="100" cy="310" r="3" fill="#FF6347"/>
+                    <circle cx="300" cy="308" r="4" fill="#FFD700"/>
+                    <circle cx="320" cy="305" r="3" fill="#FF69B4"/>
+                    
+                    <!-- Path to door -->
+                    <ellipse cx="200" cy="305" rx="35" ry="8" fill="#D2B48C"/>
+                    <ellipse cx="200" cy="310" rx="30" ry="6" fill="#DEB887"/>
+                </svg>
+                
+                <!-- Logo Overlay -->
+                <div class="logo-container">
+                    <h1 class="logo-text">Clara's Cottage</h1>
+                    <p class="tagline">Artisan Baked Goods</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Welcome Section -->
+        <section class="welcome-section">
+            <div class="scroll-indicator">
+                <span>Scroll to explore</span>
+                <div class="scroll-arrow">↓</div>
+            </div>
+            
+            <div class="welcome-content">
+                <h2>Welcome to Our Little Kitchen</h2>
+                <p class="intro-text">
+                    Nestled in the heart of California, Clara's Cottage brings you 
+                    handcrafted cookies, brownies, cakes, and artisan breads — 
+                    all made with love in our home kitchen.
+                </p>
+                
+                <div class="feature-cards">
+                    <div class="feature-card">
+                        <div class="card-icon">🍪</div>
+                        <h3>Cookies & Brownies</h3>
+                        <p>From classic chocolate chip to creative seasonal flavors</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-icon">🎂</div>
+                        <h3>Cakes & Treats</h3>
+                        <p>Custom cakes for celebrations big and small</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="card-icon">🥖</div>
+                        <h3>Artisan Breads</h3>
+                        <p>Fresh-baked loaves with old-world techniques</p>
+                    </div>
+                </div>
+                
+                <a href="menu.html" class="cta-button">View Our Menu</a>
+            </div>
+        </section>
+
+        <!-- Image Gallery Placeholder -->
+        <section class="gallery-section">
+            <h2>From Our Kitchen</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item placeholder">
+                    <div class="placeholder-content">
+                        <span class="placeholder-icon">📸</span>
+                        <span class="placeholder-text">Photo: Signature cookies on cooling rack</span>
+                    </div>
+                </div>
+                <div class="gallery-item placeholder">
+                    <div class="placeholder-content">
+                        <span class="placeholder-icon">📸</span>
+                        <span class="placeholder-text">Photo: Clara decorating a cake</span>
+                    </div>
+                </div>
+                <div class="gallery-item placeholder">
+                    <div class="placeholder-content">
+                        <span class="placeholder-icon">📸</span>
+                        <span class="placeholder-text">Photo: Fresh bread loaves</span>
+                    </div>
+                </div>
+                <div class="gallery-item placeholder">
+                    <div class="placeholder-content">
+                        <span class="placeholder-icon">📸</span>
+                        <span class="placeholder-text">Photo: Brownies stacked with ingredients</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p class="cottage-food-notice">
+                🏠 Made with love in a California home kitchen
+            </p>
+            <p class="copyright">© 2026 Clara's Cottage</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
