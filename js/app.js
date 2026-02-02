@@ -529,11 +529,217 @@ function showSection(sectionId) {
 }
 
 // ==========================================
+// SHOPPING CART
+// ==========================================
+function getCart() {
+    return JSON.parse(localStorage.getItem('claras-cart') || '[]');
+}
+
+function saveCart(cart) {
+    localStorage.setItem('claras-cart', JSON.stringify(cart));
+    updateCartCount();
+}
+
+function updateCartCount() {
+    const cart = getCart();
+    const count = cart.reduce((sum, item) => sum + item.qty, 0);
+    document.querySelectorAll('#cart-count, .cart-count').forEach(el => {
+        el.textContent = count;
+    });
+}
+
+function addToCart(name, price, category) {
+    const cart = getCart();
+    const existing = cart.find(item => item.name === name);
+    
+    if (existing) {
+        existing.qty += 1;
+    } else {
+        cart.push({ name, price: parseFloat(price), qty: 1, category });
+    }
+    
+    saveCart(cart);
+    
+    // Show feedback
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = '✓ Added!';
+    btn.style.background = 'var(--sage)';
+    setTimeout(() => {
+        btn.textContent = originalText;
+        btn.style.background = '';
+    }, 1000);
+}
+
+function updateQty(name, delta) {
+    const cart = getCart();
+    const item = cart.find(i => i.name === name);
+    if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) {
+            const idx = cart.indexOf(item);
+            cart.splice(idx, 1);
+        }
+    }
+    saveCart(cart);
+    renderCart();
+}
+
+function removeFromCart(name) {
+    let cart = getCart();
+    cart = cart.filter(item => item.name !== name);
+    saveCart(cart);
+    renderCart();
+}
+
+function calculateTotal(cart) {
+    return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+}
+
+function renderCart() {
+    const cart = getCart();
+    const emptyEl = document.getElementById('cart-empty');
+    const contentEl = document.getElementById('cart-content');
+    const itemsEl = document.getElementById('cart-items');
+    
+    if (!emptyEl || !contentEl || !itemsEl) return;
+    
+    if (cart.length === 0) {
+        emptyEl.style.display = 'block';
+        contentEl.style.display = 'none';
+        return;
+    }
+    
+    emptyEl.style.display = 'none';
+    contentEl.style.display = 'block';
+    
+    itemsEl.innerHTML = cart.map(item => `
+        <div class="cart-item">
+            <div class="item-info">
+                <div class="item-name">${item.name}</div>
+                <div class="item-price">$${item.price.toFixed(2)} each</div>
+            </div>
+            <div class="item-qty">
+                <button class="qty-btn" onclick="updateQty('${item.name}', -1)">−</button>
+                <span class="qty-num">${item.qty}</span>
+                <button class="qty-btn" onclick="updateQty('${item.name}', 1)">+</button>
+            </div>
+            <div class="item-total">$${(item.price * item.qty).toFixed(2)}</div>
+            <button class="remove-btn" onclick="removeFromCart('${item.name}')">🗑️</button>
+        </div>
+    `).join('');
+    
+    const total = calculateTotal(cart);
+    document.getElementById('subtotal').textContent = '$' + total.toFixed(2);
+    document.getElementById('total').textContent = '$' + total.toFixed(2);
+    
+    updateCartCount();
+}
+
+// ==========================================
+// MENU DISPLAY WITH ADD TO CART
+// ==========================================
+function displayMenuWithCart() {
+    const container = document.getElementById('menu-display');
+    if (!container) return;
+    
+    applySettings();
+    const menu = getMenu();
+    let html = '';
+    
+    const sections = [
+        { key: 'cookies', title: '🍪 Cookies & Brownies' },
+        { key: 'cakes', title: '🎂 Cakes & Treats' },
+        { key: 'breads', title: '🥖 Artisan Breads' }
+    ];
+    
+    sections.forEach(section => {
+        if (menu[section.key] && menu[section.key].length > 0) {
+            html += `<div class="menu-section">
+                <h3>${section.title}</h3>`;
+            
+            menu[section.key].forEach(item => {
+                const priceNum = item.price.replace(/[^0-9.]/g, '');
+                html += `<div class="menu-item" style="flex-wrap: wrap; gap: 0.5rem;">
+                    <span class="name">${item.name}</span>
+                    <span class="dots"></span>
+                    <span class="price">$${item.price}</span>
+                    <button onclick="addToCart('${item.name.replace(/'/g, "\\'")}', '${priceNum}', 'baked')" 
+                            style="background: var(--gold-light); border: none; padding: 0.3rem 0.8rem; 
+                                   border-radius: 15px; font-family: var(--font-script); font-size: 1rem;
+                                   cursor: pointer; margin-left: 0.5rem; transition: all 0.2s;">
+                        + Add
+                    </button>
+                </div>`;
+            });
+            
+            html += '</div>';
+        }
+    });
+    
+    container.innerHTML = html;
+}
+
+function displayFlowersWithCart() {
+    const container = document.getElementById('flowers-display');
+    if (!container) return;
+    
+    applySettings();
+    const flowers = getFlowers();
+    let html = '';
+    
+    const sections = [
+        { key: 'seasonal', title: '🌷 Seasonal Blooms' },
+        { key: 'bouquets', title: '💐 Bouquets & Arrangements' }
+    ];
+    
+    sections.forEach(section => {
+        if (flowers[section.key] && flowers[section.key].length > 0) {
+            html += `<div class="menu-section">
+                <h3>${section.title}</h3>`;
+            
+            flowers[section.key].forEach(item => {
+                const priceStr = item.price.replace(/[^0-9.]/g, '') || '0';
+                const displayPrice = item.price.startsWith('$') || item.price.startsWith('from') ? item.price : '$' + item.price;
+                html += `<div class="menu-item" style="flex-wrap: wrap; gap: 0.5rem;">
+                    <span class="name">${item.name}</span>
+                    <span class="dots"></span>
+                    <span class="price">${displayPrice}</span>
+                    <button onclick="addToCart('${item.name.replace(/'/g, "\\'")}', '${priceStr}', 'flowers')" 
+                            style="background: var(--rose-light); border: none; padding: 0.3rem 0.8rem; 
+                                   border-radius: 15px; font-family: var(--font-script); font-size: 1rem;
+                                   cursor: pointer; margin-left: 0.5rem; transition: all 0.2s;">
+                        + Add
+                    </button>
+                </div>`;
+            });
+            
+            html += '</div>';
+        }
+    });
+    
+    container.innerHTML = html;
+}
+
+// ==========================================
 // INITIALIZE
 // ==========================================
 document.addEventListener('DOMContentLoaded', function() {
     createFireflies();
     applySettings();
-    displayMenu();
-    displayFlowers();
+    
+    // Use cart-enabled display if on menu pages
+    if (document.getElementById('menu-display')) {
+        displayMenuWithCart();
+    } else {
+        displayMenu();
+    }
+    
+    if (document.getElementById('flowers-display')) {
+        displayFlowersWithCart();
+    } else {
+        displayFlowers();
+    }
+    
+    updateCartCount();
 });
