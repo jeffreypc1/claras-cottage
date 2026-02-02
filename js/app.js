@@ -19,7 +19,80 @@ function createFireflies() {
 }
 
 // ==========================================
-// MENU DATA & MANAGEMENT
+// SETTINGS (Font customization)
+// ==========================================
+function getSettings() {
+    const saved = localStorage.getItem('claras-settings');
+    return saved ? JSON.parse(saved) : {
+        font: "'Caveat', cursive",
+        size: "1.4"
+    };
+}
+
+function saveSettingsData(settings) {
+    localStorage.setItem('claras-settings', JSON.stringify(settings));
+}
+
+function applySettings() {
+    const settings = getSettings();
+    document.documentElement.style.setProperty('--chalk-font', settings.font);
+    document.documentElement.style.setProperty('--chalk-size', settings.size + 'rem');
+    document.documentElement.style.setProperty('--chalk-title-size', (parseFloat(settings.size) * 2.5) + 'rem');
+}
+
+function loadSettings() {
+    const settings = getSettings();
+    const fontSelect = document.getElementById('font-select');
+    const sizeSlider = document.getElementById('size-slider');
+    
+    if (fontSelect) {
+        fontSelect.value = settings.font;
+    }
+    if (sizeSlider) {
+        sizeSlider.value = settings.size;
+        document.getElementById('size-display').textContent = settings.size + 'rem';
+    }
+    
+    updateFontPreview();
+}
+
+function updateFontPreview() {
+    const fontSelect = document.getElementById('font-select');
+    const sizeSlider = document.getElementById('size-slider');
+    const preview = document.getElementById('font-preview');
+    const sizeDisplay = document.getElementById('size-display');
+    
+    if (!fontSelect || !sizeSlider || !preview) return;
+    
+    const font = fontSelect.value;
+    const size = sizeSlider.value;
+    
+    preview.style.fontFamily = font;
+    preview.querySelectorAll('.font-preview-text').forEach(el => {
+        el.style.fontSize = size + 'rem';
+    });
+    
+    if (sizeDisplay) {
+        sizeDisplay.textContent = size + 'rem';
+    }
+}
+
+function saveSettings() {
+    const fontSelect = document.getElementById('font-select');
+    const sizeSlider = document.getElementById('size-slider');
+    
+    const settings = {
+        font: fontSelect.value,
+        size: sizeSlider.value
+    };
+    
+    saveSettingsData(settings);
+    applySettings();
+    alert('Font settings saved! 🎨');
+}
+
+// ==========================================
+// MENU DATA & MANAGEMENT (Baked Goods)
 // ==========================================
 const defaultMenu = {
     cookies: [
@@ -53,12 +126,42 @@ function saveMenuData(menu) {
 }
 
 // ==========================================
-// MENU DISPLAY (Chalkboard)
+// FLOWERS DATA & MANAGEMENT
+// ==========================================
+const defaultFlowers = {
+    seasonal: [
+        { name: 'Sunflowers', price: '4.00/stem' },
+        { name: 'Dahlias', price: '5.00/stem' },
+        { name: 'Zinnias (bunch)', price: '8.00' },
+        { name: 'Lavender (bunch)', price: '6.00' },
+        { name: 'Sweet Peas', price: '7.00/bunch' }
+    ],
+    bouquets: [
+        { name: 'Garden Mix (small)', price: '25.00' },
+        { name: 'Garden Mix (large)', price: '45.00' },
+        { name: 'Wildflower Bouquet', price: '35.00' },
+        { name: 'Romantic Rose Mix', price: '50.00' },
+        { name: 'Custom Arrangement', price: 'from $30' }
+    ]
+};
+
+function getFlowers() {
+    const saved = localStorage.getItem('claras-flowers');
+    return saved ? JSON.parse(saved) : defaultFlowers;
+}
+
+function saveFlowersData(flowers) {
+    localStorage.setItem('claras-flowers', JSON.stringify(flowers));
+}
+
+// ==========================================
+// MENU DISPLAY (Chalkboard - Baked Goods)
 // ==========================================
 function displayMenu() {
     const container = document.getElementById('menu-display');
     if (!container) return;
     
+    applySettings();
     const menu = getMenu();
     let html = '';
     
@@ -89,7 +192,43 @@ function displayMenu() {
 }
 
 // ==========================================
-// MENU EDITOR (Admin)
+// FLOWERS DISPLAY (Chalkboard)
+// ==========================================
+function displayFlowers() {
+    const container = document.getElementById('flowers-display');
+    if (!container) return;
+    
+    applySettings();
+    const flowers = getFlowers();
+    let html = '';
+    
+    const sections = [
+        { key: 'seasonal', title: '🌷 Seasonal Blooms' },
+        { key: 'bouquets', title: '💐 Bouquets & Arrangements' }
+    ];
+    
+    sections.forEach(section => {
+        if (flowers[section.key] && flowers[section.key].length > 0) {
+            html += `<div class="menu-section">
+                <h3>${section.title}</h3>`;
+            
+            flowers[section.key].forEach(item => {
+                html += `<div class="menu-item">
+                    <span class="name">${item.name}</span>
+                    <span class="dots"></span>
+                    <span class="price">${item.price.startsWith('$') || item.price.startsWith('from') ? item.price : '$' + item.price}</span>
+                </div>`;
+            });
+            
+            html += '</div>';
+        }
+    });
+    
+    container.innerHTML = html;
+}
+
+// ==========================================
+// MENU EDITOR (Admin - Baked Goods)
 // ==========================================
 function loadMenuEditor() {
     const menu = getMenu();
@@ -135,7 +274,57 @@ function saveMenu() {
     });
     
     saveMenuData(menu);
-    alert('Menu saved! Changes will appear on the chalkboard. 📋');
+    alert('Baked goods menu saved! 🍪');
+}
+
+// ==========================================
+// FLOWERS EDITOR (Admin)
+// ==========================================
+function loadFlowersEditor() {
+    const flowers = getFlowers();
+    
+    ['seasonal', 'bouquets'].forEach(category => {
+        const tbody = document.querySelector(`#${category}-table tbody`);
+        if (!tbody) return;
+        
+        tbody.innerHTML = '';
+        flowers[category].forEach((item, index) => {
+            addFlowerRow(tbody, category, item.name, item.price, index);
+        });
+    });
+}
+
+function addFlowerRow(tbody, category, name = '', price = '', index = null) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td><input type="text" value="${name}" placeholder="Flower name..." class="name-input"></td>
+        <td><input type="text" value="${price}" placeholder="0.00" class="price-input"></td>
+        <td><button class="btn-delete" onclick="this.closest('tr').remove()">🗑️ Remove</button></td>
+    `;
+    tbody.appendChild(row);
+}
+
+function addFlowerItem(category) {
+    const tbody = document.querySelector(`#${category}-table tbody`);
+    addFlowerRow(tbody, category);
+}
+
+function saveFlowers() {
+    const flowers = { seasonal: [], bouquets: [] };
+    
+    ['seasonal', 'bouquets'].forEach(category => {
+        const rows = document.querySelectorAll(`#${category}-table tbody tr`);
+        rows.forEach(row => {
+            const name = row.querySelector('.name-input').value.trim();
+            const price = row.querySelector('.price-input').value.trim();
+            if (name && price) {
+                flowers[category].push({ name, price });
+            }
+        });
+    });
+    
+    saveFlowersData(flowers);
+    alert('Flowers menu saved! 🌸');
 }
 
 // ==========================================
@@ -344,5 +533,7 @@ function showSection(sectionId) {
 // ==========================================
 document.addEventListener('DOMContentLoaded', function() {
     createFireflies();
+    applySettings();
     displayMenu();
+    displayFlowers();
 });

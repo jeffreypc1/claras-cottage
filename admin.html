@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kitchen Admin | Clara's Cottage</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Pacifico&family=Shadows+Into+Light&family=Amatic+SC:wght@400;700&family=Indie+Flower&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <style>
         .board-tabs {
@@ -53,7 +53,8 @@
     <header class="site-header" style="background: rgba(101, 67, 33, 0.95);">
         <nav>
             <a href="index.html" class="nav-link">Home</a>
-            <a href="menu.html" class="nav-link">Menu</a>
+            <a href="menu.html" class="nav-link">Baked Goods</a>
+            <a href="flowers.html" class="nav-link">Flowers</a>
             <a href="contact.html" class="nav-link">Contact</a>
             <a href="admin.html" class="nav-link active">🔧 Kitchen</a>
         </nav>
@@ -66,7 +67,9 @@
         </div>
 
         <div class="admin-tabs">
-            <button class="admin-tab active" onclick="showSection('menu-section')">📋 Menu Editor</button>
+            <button class="admin-tab active" onclick="showSection('menu-section')">🍪 Baked Goods</button>
+            <button class="admin-tab" onclick="showSection('flowers-section')">🌸 Flowers</button>
+            <button class="admin-tab" onclick="showSection('settings-section')">⚙️ Chalkboard Style</button>
             <button class="admin-tab" onclick="showSection('tasks-section')">📌 To-Do Board</button>
         </div>
 
@@ -118,10 +121,81 @@
             </div>
 
             <div style="text-align: center; margin-top: 2rem;">
-                <button class="btn-save" onclick="saveMenu()">💾 Save Menu</button>
-                <p style="margin-top: 1rem; color: var(--brown-medium); font-style: italic;">
-                    Changes will appear on the chalkboard menu
-                </p>
+                <button class="btn-save" onclick="saveMenu()">💾 Save Baked Goods Menu</button>
+            </div>
+        </div>
+
+        <!-- Flowers Editor Section -->
+        <div id="flowers-section" class="admin-section">
+            <div class="menu-editor">
+                <h2>🌷 Seasonal Flowers</h2>
+                <table class="menu-table" id="seasonal-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Flower Name</th>
+                            <th style="width: 25%;">Price (per stem/bunch)</th>
+                            <th style="width: 25%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button class="btn-add" onclick="addFlowerItem('seasonal')">+ Add Seasonal Flower</button>
+            </div>
+
+            <div class="menu-editor">
+                <h2>💐 Bouquets</h2>
+                <table class="menu-table" id="bouquets-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Bouquet Name</th>
+                            <th style="width: 25%;">Price</th>
+                            <th style="width: 25%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button class="btn-add" onclick="addFlowerItem('bouquets')">+ Add Bouquet</button>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <button class="btn-save" onclick="saveFlowers()">💾 Save Flowers Menu</button>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings-section" class="admin-section">
+            <div class="settings-panel">
+                <h2>✏️ Chalkboard Font Settings</h2>
+                
+                <div class="setting-row">
+                    <label for="font-select">Font Style:</label>
+                    <select id="font-select" onchange="updateFontPreview()">
+                        <option value="'Caveat', cursive">Caveat (default)</option>
+                        <option value="'Shadows Into Light', cursive">Shadows Into Light</option>
+                        <option value="'Indie Flower', cursive">Indie Flower</option>
+                        <option value="'Amatic SC', cursive">Amatic SC</option>
+                        <option value="'Kalam', cursive">Kalam</option>
+                        <option value="'Pacifico', cursive">Pacifico</option>
+                    </select>
+                </div>
+                
+                <div class="setting-row">
+                    <label for="size-slider">Font Size:</label>
+                    <input type="range" id="size-slider" min="1" max="2.2" step="0.1" value="1.4" onchange="updateFontPreview()">
+                    <span class="size-value" id="size-display">1.4rem</span>
+                </div>
+                
+                <div class="font-preview" id="font-preview">
+                    <p class="font-preview-text">Classic Chocolate Chip ... $3.50</p>
+                    <p class="font-preview-text">Sourdough Boule ... $8.00</p>
+                </div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn-save" onclick="saveSettings()">💾 Save Font Settings</button>
+                    <p style="margin-top: 1rem; color: var(--brown-medium); font-style: italic;">
+                        Changes will apply to both menus
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -210,7 +284,9 @@
         // Initialize admin page
         document.addEventListener('DOMContentLoaded', function() {
             loadMenuEditor();
+            loadFlowersEditor();
             loadKanban();
+            loadSettings();
         });
     </script>
 </body>
